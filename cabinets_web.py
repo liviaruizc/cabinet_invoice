@@ -49,22 +49,12 @@ class ReceiptGenerator:
             width, height = LETTER
             y = height - 50
 
-            try:
-                logo_path = 'logo.png'
-                if os.path.exists(logo_path):
-                    im = Image.open(logo_path)
-                    im.convert('RGB').save('logo_fixed.png', 'PNG')
-                    c.drawImage('logo_fixed.png', 50, y - 40, width=90, preserveAspectRatio=True)
-
-            except Exception as e:
-                print('Logo Issue', e)
-
             # Header (logo & business info can go here)
             c.setFont('Helvetica-Bold', 14)
-            c.drawString(150, y - 10, "Mike Renovations LLC")
+            c.drawString(50, y - 10, "Mike Renovations LLC")
             c.setFont('Helvetica', 10)
-            c.drawString(150, y - 25, "Phone: 239-200-5772")
-            c.drawString(150, y - 40, "Email: contact@mikerenovations.com")
+            c.drawString(50, y - 25, "Phone: 239-200-5772")
+            c.drawString(50, y - 40, "Email: contact@mikerenovations.com")
 
             y -= 30
 
@@ -183,4 +173,5 @@ if st.button("Generate PDF Invoice"):
             st.download_button("📄 Download Invoice", f, file_name="invoice.pdf", mime="application/pdf")
     else:
         st.warning("Your cart is empty!")
+
 
