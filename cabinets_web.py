@@ -41,16 +41,36 @@ class ReceiptGenerator:
         self.cart = cart
 
     def create_pdf(self):
+        import tempfile
+        from PIL import Image
+
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
             c = canvas.Canvas(tmp.name, pagesize=LETTER)
             width, height = LETTER
             y = height - 50
 
+            try:
+                logo_path = 'logo.png'
+                if os.path.exists(logo_path):
+                    im = Image.open(logo_path)
+                    im.convert('RGB').save('logo_fixed.png', 'PNG')
+                    c.drawImage('logo_fixed.png', 50, y - 40, width=90, preserveAspectRatio=True)
+
+            except Exception as e:
+                print('Logo Issue', e)
+
             # Header (logo & business info can go here)
+            c.setFont('Helvetica-Bold', 14)
+            c.drawString(150, y - 10, "Mike Renovations LLC")
+            c.setFont('Helvetica', 10)
+            c.drawString(150, y - 25, "Phone: 239-200-5772")
+            c.drawString(150, y - 40, "Email: contact@mikerenovations.com")
+
+            y -= 30
 
             # Invoice title and date
             c.setFont("Helvetica-Bold", 16)
-            c.drawString(50, y, "Cabinet Order Receipt")
+            c.drawString(50, y, "Cabinet Order Invoice")
             c.setFont("Helvetica", 9)
             c.drawString(450, y, datetime.now().strftime("%Y-%m-%d %H:%M"))
             y -= 30
@@ -59,7 +79,7 @@ class ReceiptGenerator:
             c.setFont("Helvetica-Bold", 10)
             c.drawString(50, y, "TYPE")
             c.drawString(150, y, "ITEM")
-            c.drawString(300, y, "PRICE W/O DISCOUNT $")
+            c.drawString(280, y, "PRICE W/O DISCOUNT")
             c.drawString(410, y, "QTY")
             c.drawString(460, y, "FINAL PRICE $")
             c.drawString(540, y, "TOTAL $")
