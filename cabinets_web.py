@@ -69,8 +69,6 @@ class ReceiptGenerator:
             y -= 30
 
             # Invoice title and date
-            c.setFont("Helvetica-Bold", 16)
-            c.drawString(50, y, "Cabinet Order Invoice")
             c.setFont("Helvetica", 9)
             c.drawString(450, y, datetime.now().strftime("%Y-%m-%d %H:%M"))
             y -= 30
@@ -177,11 +175,12 @@ else:
 
 
 # Generate PDF receipt
-if st.button("Generate PDF Receipt"):
+if st.button("Generate PDF Invoice"):
     if cart_items:
         receipt = ReceiptGenerator(cart_items)
         pdf_path = receipt.create_pdf()
         with open(pdf_path, "rb") as f:
-            st.download_button("📄 Download Receipt", f, file_name="receipt.pdf", mime="application/pdf")
+            st.download_button("📄 Download Invoice", f, file_name="invoice.pdf", mime="application/pdf")
     else:
         st.warning("Your cart is empty!")
+
