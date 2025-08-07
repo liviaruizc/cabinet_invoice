@@ -69,7 +69,7 @@ class ReceiptGenerator:
             x = 40
             # Invoice title and date
             c.setFont("Helvetica", 9)
-            c.drawString(700, y, datetime.now().strftime("%Y-%m-%d %H:%M"))
+            c.drawString(700, y, datetime.now().strftime("%Y-%m-%d"))
             y -= 30
 
             # Table headers
@@ -218,5 +218,6 @@ if st.button("Generate PDF Invoice"):
             st.download_button("📄 Download Invoice", f, file_name="invoice.pdf", mime="application/pdf")
     else:
         st.warning("Your cart is empty!")
+
 
 
