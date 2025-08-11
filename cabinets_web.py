@@ -28,7 +28,7 @@ class CartManager:
             "base_price": base_price,
             "savings": savings,
             "final_price": round(final_price, 2),
-            "total": round(total, 2),
+            "total": round(total, 2)
 
         })
 
@@ -69,7 +69,7 @@ class ReceiptGenerator:
             x = 40
             # Invoice title and date
             c.setFont("Helvetica", 9)
-            c.drawString(700, y, datetime.now().strftime("%Y-%m-%d"))
+            c.drawString(750, y, datetime.now().strftime("%Y-%m-%d %H:%M"))
             y -= 30
 
             # Table headers
@@ -114,7 +114,7 @@ class ReceiptGenerator:
 
             # Totals section
             tax = total_sum * 0.065
-            final = total_sum + tax
+            final = total_sum + tax + shipping_price + delivery_price
             savings_total = original_total - total_sum
 
             y -= 20
@@ -127,12 +127,24 @@ class ReceiptGenerator:
             c.drawRightString(600, y, "You are saving:")
             c.drawRightString(750, y, f"$(-{savings_total:.2f})")
             y -= 15
-            c.drawRightString(600, y, "Subtotal:")
+            c.drawRightString(600, y, "Subtotal (with discount):")
             c.drawRightString(750, y, f"${total_sum:.2f}")
             y -= 15
             c.drawRightString(600, y, "Tax (6.5%):")
             c.drawRightString(750, y, f"${tax:.2f}")
             y -= 15
+            c.drawRightString(600, y, "Shipping Fee:")
+            if shipping_price == 0.00:
+                c.drawRightString(750, y, "FREE")
+            else:
+                c.drawRightString(750, y, f"${shipping_price}")
+            y-= 15
+            c.drawRightString(600, y, "Delivery Fee:")
+            if delivery_price == 0.00:
+                c.drawRightString(750, y, "FREE")
+            else:
+                c.drawRightString(750, y, f"${delivery_price}")
+            y-= 15
             c.drawRightString(600, y, "Final Total:")
             c.drawRightString(750, y, f"${final:.2f}")
 
@@ -153,6 +165,9 @@ pretty_names = [t.title() for t in types]
 pretty_to_clean = dict(zip(pretty_names, types))
 
 # --- Streamlit UI ---
+
+shipping_options = [0.00, 100.00, 200.00, 300.00, 400.00]
+delivery_options = [0.00, 100.00, 200.00, 300.00, 400.00]
 
 st.title("🧰 Cabinet Order System")
 
@@ -188,6 +203,20 @@ if st.button("Add to Cart"):
 if st.button("Clear Cart"):
     cart.clear_cart()
 
+shipping_price = st.selectbox(
+    "Select shipping price",
+    options=shipping_options,
+    format_func=lambda x: "FREE" if x == 0 else f"${x:,.2f}"
+)
+st.session_state.shipping_price = shipping_price
+
+delivery_price = st.selectbox(
+    "Select delivery price",
+    options=delivery_options,
+    format_func=lambda x: "FREE" if x == 0 else f"${x:,.2f}"
+)
+st.session_state.delivery_price = delivery_price
+
 # Show cart
 cart_items = cart.get_cart()
 if cart_items:
@@ -209,6 +238,7 @@ else:
     st.info("Cart is empty")
 
 
+
 # Generate PDF receipt
 if st.button("Generate PDF Invoice"):
     if cart_items:
@@ -218,6 +248,3 @@ if st.button("Generate PDF Invoice"):
             st.download_button("📄 Download Invoice", f, file_name="invoice.pdf", mime="application/pdf")
     else:
         st.warning("Your cart is empty!")
-
-
-
