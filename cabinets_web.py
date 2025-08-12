@@ -4,8 +4,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import LETTER, landscape
 import tempfile
 from datetime import datetime
-import os
-
+import urllib.parse
 
 # --- Classes ---
 
@@ -43,6 +42,11 @@ class CartManager:
         tax = subtotal * 0.065
         final = subtotal + tax
         return subtotal, tax, final
+
+# -------------------------
+#PDF Generator
+#--------------------------
+
 
 class ReceiptGenerator:
     def __init__(self, cart):
@@ -169,18 +173,34 @@ pretty_to_clean = dict(zip(pretty_names, types))
 shipping_options = [0.00, 100.00, 200.00, 300.00, 400.00]
 delivery_options = [0.00, 100.00, 200.00, 300.00, 400.00]
 
-st.title("🧰 Cabinet Order System")
+#-------------
+# Mode Selection
+# -------------
 
-#Markup percentage input
-markup_percent = st.number_input(
-    "Enter markup percentage (%)",
-    min_value=0.0,
-    max_value=100.0,
-    value=30.0, #Default value
-    step=0.1
-)
+params = st.query_params
+customer_mode = "markup" in params
 
-st.session_state.markup_percent = markup_percent
+if customer_mode:
+    markup_percent = float(params("markup", [30])[0])
+    st.session_state.markup_percent = markup_percent
+    st.title("Cabinet Depot - Order System")
+
+else:
+    st.title("Cabinet Depot - Order System")
+    markup_percent = st.number_input(
+        "Enter your markup percentage",
+    min_value=0,
+    max_value=100,
+    value=30,
+    step=1
+    )
+
+    st.session_state.markup_percent = markup_percent
+
+    #Generate customer link
+    base_url = "https://cabinets-invoice-app.com/customer"
+    params_str = urllib.parse.urlencode({"markup": markup_percent})
+    st.code(f"{base_url}?{params_str}", language="text")
 
 cart = CartManager()
 
