@@ -188,7 +188,7 @@ markup_percent = st.number_input(
 st.session_state.markup_percent = markup_percent
 
 #Generate Customer Link
-base_url = "https://cabinetinvoice-generator.streamlit.app/customer_app"
+base_url = "https://cabinet-invoice-customer.streamlit.app"
 customer_link = f"{base_url}?markup={markup_percent}"
 
 st.markdown("### Customer Link")
@@ -261,3 +261,4 @@ if st.button("Generate PDF Invoice"):
             st.download_button("📄 Download Invoice", f, file_name="invoice.pdf", mime="application/pdf")
     else:
         st.warning("Your cart is empty!")
+
